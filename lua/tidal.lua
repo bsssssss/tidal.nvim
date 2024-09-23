@@ -79,8 +79,21 @@ end
 
 M.setup = function(opts)
 	config = vim.tbl_deep_extend("force", config, opts or {})
-	vim.api.nvim_create_user_command("TidalStart", require("tidal").tidal_start, {})
-	vim.api.nvim_create_user_command("TidalSend", require("tidal").tidal_send, {})
+	vim.api.nvim_create_augroup("Tidal", {
+		clear = true,
+	})
+	vim.api.nvim_create_autocmd("FileType", {
+		group = "Tidal",
+		pattern = "tidal",
+		callback = function()
+			print("entering a tidal file..")
+		end,
+	})
+	vim.api.nvim_create_user_command("TidalStart", M.tidal_start, {})
+	vim.api.nvim_create_user_command("TidalSend", M.tidal_send, {})
+	vim.keymap.set({ "n", "i" }, "<D-e>", "<cmd>TidalSend<CR>", { desc = "Send to tidal" })
+	-- vim.api.nvim_create_user_command("TidalStart", require("tidal").tidal_start, {})
+	-- vim.api.nvim_create_user_command("TidalSend", require("tidal").tidal_send, {})
 end
 
 return M
