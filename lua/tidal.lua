@@ -52,6 +52,10 @@ local function send_ghci(text)
 	end
 end
 
+local function init()
+	require("tidal.commands")()
+end
+
 -- Public Functions
 
 M.tidal_start = function()
@@ -75,6 +79,8 @@ end
 
 M.setup = function(opts)
 	config = vim.tbl_deep_extend("force", config, opts or {})
+	vim.api.nvim_create_user_command("TidalStart", require("tidal").tidal_start, {})
+	vim.api.nvim_create_user_command("TidalSend", require("tidal").tidal_send, {})
 end
 
 return M
