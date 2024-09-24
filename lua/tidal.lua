@@ -111,12 +111,19 @@ end
 M.setup = function(opts)
 	config = vim.tbl_deep_extend("force", config, opts or {})
 
+	vim.filetype.add({
+		extension = {
+			tidal = "tidal",
+		},
+	})
+
 	vim.api.nvim_create_user_command("TidalStart", M.tidal_start, {})
 	vim.api.nvim_create_user_command("TidalSend", M.tidal_send, {})
 	vim.api.nvim_create_user_command("TidalHush", M.tidal_hush, {})
 	vim.api.nvim_create_user_command("TidalPost", M.toggle_ghci, {})
 
 	vim.api.nvim_create_augroup("Tidal", { clear = true })
+
 	vim.api.nvim_create_autocmd({ "BufRead", "BufNewFile" }, {
 		group = "Tidal",
 		pattern = "*.tidal",
