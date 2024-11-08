@@ -5,6 +5,7 @@ endif
 syn match tidalOperator "\$"
 syn match tidalOperator "<\$>"
 syn match tidalOperator "#"
+syn match tidalOperator "\."
 
 syn match tidalOperator "+"
 syn match tidalOperator "|+"
