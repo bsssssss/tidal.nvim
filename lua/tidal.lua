@@ -121,20 +121,6 @@ M.setup = function(opts)
 	vim.api.nvim_create_user_command("TidalSend", M.tidal_send, {})
 	vim.api.nvim_create_user_command("TidalHush", M.tidal_hush, {})
 	vim.api.nvim_create_user_command("TidalPost", M.toggle_ghci, {})
-
-	vim.api.nvim_create_augroup("Tidal", { clear = true })
-
-	vim.api.nvim_create_autocmd({ "BufRead", "BufNewFile" }, {
-		group = "Tidal",
-		pattern = "*.tidal",
-		callback = function()
-			print("entering a tidal file..")
-			-- vim.bo.filetype = "haskell"
-			vim.keymap.set({ "n", "i" }, "<D-e>", "<cmd>TidalSend<CR>", { desc = "Send to tidal" })
-			vim.keymap.set({ "n", "i" }, "<D-.>", "<cmd>TidalHush<CR>", { desc = "Silence tidal" })
-			vim.keymap.set("n", "<CR>", "<cmd>TidalPost<CR>", { desc = "Toggle Postwindow" })
-		end,
-	})
 end
 
 return M
