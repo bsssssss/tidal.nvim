@@ -189,7 +189,7 @@ highlight def link haskellLineComment Comment
 highlight def link haskellBlockComment Comment
 highlight def link haskellPragma SpecialComment
 highlight def link haskellLiquid SpecialComment
-highlight def link haskellString String
+highlight def link haskellString Macro
 highlight def link haskellChar String
 highlight def link haskellBacktick Operator
 highlight def link haskellQuasiQuoted String
