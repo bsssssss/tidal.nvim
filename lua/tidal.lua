@@ -6,15 +6,16 @@ local ghci_job_id = nil
 
 local config = {
 	tidal_boot = nil,
+    post_window = {
+        split = "right",
+        width = vim.o.columns / 3,
+    }
 }
 
 local function open_postwindow()
+    local postwin_config = vim.tbl_deep_extend("force", config.post_window, { win = 0 })
 	if ghci_bufnr and not ghci_win_id then
-		ghci_win_id = vim.api.nvim_open_win(ghci_bufnr, false, {
-			split = "below",
-			height = 15,
-			win = 0,
-		})
+		ghci_win_id = vim.api.nvim_open_win(ghci_bufnr, false, postwin_config)
 	else
 		print("Cannot open post window: buffer is nil or post window is already open")
 	end
