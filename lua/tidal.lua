@@ -8,7 +8,7 @@ local config = {
 	tidal_boot = nil,
     post_window = {
         split = "right",
-        width = vim.o.columns / 3,
+        width = math.floor(vim.o.columns / 3),
     }
 }
 
