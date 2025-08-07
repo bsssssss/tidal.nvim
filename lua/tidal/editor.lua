@@ -1,5 +1,6 @@
 local ghci = require("tidal.ghci")
 local postwin = require("tidal.postwindow")
+local format = require("tidal.format")
 local M = {}
 
 local function add_filetype()
@@ -29,12 +30,12 @@ function M.get_paragraph()
 	vim.cmd('normal! vip"ty')
 	vim.api.nvim_win_set_cursor(0, cursor_pos)
 	local expression = vim.fn.getreg("t")
-	return expression
+	return vim.trim(expression)
 end
 
 function M.eval()
 	local paragraph = M.get_paragraph()
-	local expression = require("tidal.format").format_expression(paragraph)
+	local expression = format.format_expression(paragraph)
 	if not postwin.bufnr then
 		ghci.start()
 	end
