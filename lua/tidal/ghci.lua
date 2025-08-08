@@ -38,8 +38,8 @@ function M.start()
 end
 
 function M.send(command)
-	if not M.proc then
-		error("[tidal.nvim] cannot send command, ghci not started", vim.log.levels.ERROR)
+	if not M.is_running() then
+		M.start()
 	end
 	M.proc:write(command .. "\n")
 end

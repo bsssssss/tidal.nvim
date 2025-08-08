@@ -27,6 +27,7 @@ M.setup = function()
 		},
 	})
 	vim.bo.commentstring = "-- %s"
+	vim.bo.smartindent = false -- prevent de-indentation on '#' char
 	create_autocmds()
 end
 
@@ -41,9 +42,6 @@ end
 function M.eval()
 	local paragraph = M.get_paragraph()
 	local expression = format.format_expression(paragraph)
-	if not ghci.is_running() then
-		ghci.start()
-	end
 	ghci.send(expression)
 end
 
