@@ -69,7 +69,6 @@ function M.open()
 
 	vim.api.nvim_set_current_win(win)
 	set_win_options()
-	vim.cmd("normal! G")
 	vim.api.nvim_set_current_win(previous_win)
 	M.win = win
 
@@ -88,6 +87,10 @@ function M.post(data)
 		local split = vim.split(appended, "\n", { plain = true })
 
 		vim.api.nvim_buf_set_lines(M.buf, -2, -1, false, split)
+		if M.is_open() then
+			local line_count = vim.api.nvim_buf_line_count(M.buf)
+			vim.api.nvim_win_set_cursor(M.win, { line_count, 0 })
+		end
 	end)
 end
 
