@@ -55,24 +55,25 @@ function M.is_open()
 end
 
 function M.open()
-	if M.is_open() then
-		return M.win
-	end
+	vim.schedule(function()
+		if M.is_open() then
+			return
+		end
 
-	if not M.buf_is_valid() then
-		M.create_buf()
-	end
+		if not M.buf_is_valid() then
+			M.create_buf()
+		end
 
-	local postwin_config = vim.tbl_deep_extend("force", config.post_window, { win = 0 })
-	local win = api.nvim_open_win(M.buf, false, postwin_config)
+		local postwin_config = vim.tbl_deep_extend("force", config.post_window, { win = 0 })
+		local win = api.nvim_open_win(M.buf, false, postwin_config)
 
-	local previous_win = vim.api.nvim_get_current_win()
-	vim.api.nvim_set_current_win(win)
-	set_win_options()
-	vim.api.nvim_set_current_win(previous_win)
+		local previous_win = vim.api.nvim_get_current_win()
+		vim.api.nvim_set_current_win(win)
+		set_win_options()
+		vim.api.nvim_set_current_win(previous_win)
 
-	M.win = win
-	return M.win
+		M.win = win
+	end)
 end
 
 function M.close()
