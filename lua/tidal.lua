@@ -1,7 +1,7 @@
 -- TODO:
--- Post window colors
 -- Add keymapping utilities
--- Write the api annotations and documentation
+-- Write the api annotations
+-- Write documentation
 -- Pattern highlights !
 
 local config = require("tidal.config")

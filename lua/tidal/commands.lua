@@ -7,4 +7,5 @@ return function()
 	vim.api.nvim_buf_create_user_command(0, "TidalEval", editor.eval, {})
 	vim.api.nvim_buf_create_user_command(0, "TidalHush", ghci.hush, {})
 	vim.api.nvim_buf_create_user_command(0, "TidalPost", postwin.toggle, {})
+	vim.api.nvim_buf_create_user_command(0, "TidalClear", postwin.clear, {})
 end

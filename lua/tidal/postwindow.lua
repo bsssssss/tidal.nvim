@@ -110,4 +110,10 @@ function M.post(data)
 	end)
 end
 
+function M.clear()
+    if M.buf_is_valid() then
+        api.nvim_buf_set_lines(M.buf, 0, -1, false, {})
+    end
+end
+
 return M
