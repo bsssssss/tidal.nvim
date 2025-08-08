@@ -1,5 +1,4 @@
 local ghci = require("tidal.ghci")
-local postwin = require("tidal.postwindow")
 local format = require("tidal.format")
 local M = {}
 
@@ -17,6 +16,13 @@ local function create_autocmds()
 		group = id,
 		pattern = "tidal",
 		callback = require("tidal.commands"),
+	})
+	vim.api.nvim_create_autocmd("VimLeavePre", {
+		group = id,
+		pattern = "tidal",
+		callback = function()
+			ghci.on_close()
+		end,
 	})
 end
 
@@ -36,7 +42,7 @@ end
 function M.eval()
 	local paragraph = M.get_paragraph()
 	local expression = format.format_expression(paragraph)
-	if not postwin.bufnr then
+	if not ghci.is_running() then
 		ghci.start()
 	end
 	ghci.send(expression)
