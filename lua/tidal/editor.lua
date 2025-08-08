@@ -2,14 +2,7 @@ local ghci = require("tidal.ghci")
 local format = require("tidal.format")
 local M = {}
 
-local function add_filetype()
-	vim.filetype.add({
-		extension = {
-			tidal = "tidal",
-			tidal_post = "tidal_post",
-		},
-	})
-end
+local function add_filetype() end
 
 local function create_autocmds()
 	local id = vim.api.nvim_create_augroup("tidal_editor", {})
@@ -29,7 +22,13 @@ local function create_autocmds()
 end
 
 M.setup = function()
-	add_filetype()
+	vim.filetype.add({
+		extension = {
+			tidal = "tidal",
+			tidal_post = "tidal_post",
+		},
+	})
+	vim.bo.commentstring = "-- %s"
 	create_autocmds()
 end
 
