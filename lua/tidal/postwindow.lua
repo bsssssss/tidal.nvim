@@ -15,7 +15,7 @@ function M.create_buf()
 	end
 
 	local buf = vim.api.nvim_create_buf(true, true)
-	api.nvim_buf_set_name(buf, "[ghci - tidal]")
+	api.nvim_buf_set_name(buf, "[tidal - ghci]")
 	api.nvim_set_option_value("filetype", "tidal_post", {
 		buf = buf,
 		scope = "local",
@@ -25,19 +25,21 @@ function M.create_buf()
 	return buf
 end
 
-function M.is_open()
-	return M.win ~= nil and api.nvim_win_is_valid(M.win)
-end
-
 local function set_win_options()
 	vim.opt_local.buftype = "nofile"
 	vim.opt_local.bufhidden = "hide"
 	vim.opt_local.swapfile = false
+	vim.opt_local.colorcolumn = ""
+	vim.opt_local.foldcolumn = "0"
+	vim.opt_local.winfixwidth = true
+	vim.opt_local.tabstop = 4
+	vim.opt_local.wrap = true
+	vim.opt_local.linebreak = true
+
 	local decorations = {
 		"number",
 		"relativenumber",
 		"modeline",
-		"wrap",
 		"cursorline",
 		"cursorcolumn",
 		"foldenable",
@@ -46,12 +48,10 @@ local function set_win_options()
 	for _, s in ipairs(decorations) do
 		vim.opt_local[s] = false
 	end
-	vim.opt_local.colorcolumn = ""
-	vim.opt_local.foldcolumn = "0"
-	vim.opt_local.winfixwidth = true
-	vim.opt_local.tabstop = 4
-	vim.opt_local.wrap = true
-	vim.opt_local.linebreak = true
+end
+
+function M.is_open()
+	return M.win ~= nil and api.nvim_win_is_valid(M.win)
 end
 
 function M.open()
@@ -65,14 +65,29 @@ function M.open()
 
 	local postwin_config = vim.tbl_deep_extend("force", config.post_window, { win = 0 })
 	local win = api.nvim_open_win(M.buf, false, postwin_config)
-	local previous_win = vim.api.nvim_get_current_win()
 
+	local previous_win = vim.api.nvim_get_current_win()
 	vim.api.nvim_set_current_win(win)
 	set_win_options()
 	vim.api.nvim_set_current_win(previous_win)
-	M.win = win
 
-	return win
+	M.win = win
+	return M.win
+end
+
+function M.close()
+	if M.is_open() then
+		vim.api.nvim_win_close(M.win, true)
+		M.win = nil
+	end
+end
+
+function M.toggle()
+	if M.is_open() then
+		M.close()
+	else
+		M.open()
+	end
 end
 
 function M.post(data)
@@ -92,21 +107,6 @@ function M.post(data)
 			vim.api.nvim_win_set_cursor(M.win, { line_count, 0 })
 		end
 	end)
-end
-
-function M.close()
-	if M.is_open() then
-		vim.api.nvim_win_close(M.win, true)
-		M.win = nil
-	end
-end
-
-function M.toggle()
-	if M.is_open() then
-		M.close()
-	else
-		M.open()
-	end
 end
 
 return M
