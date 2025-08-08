@@ -17,6 +17,7 @@ local function create_autocmds()
 		pattern = "tidal",
 		callback = require("tidal.commands"),
 	})
+	---@diagnostic disable-next-line: param-type-mismatch
 	vim.api.nvim_create_autocmd("VimLeavePre", {
 		group = id,
 		pattern = "tidal",
