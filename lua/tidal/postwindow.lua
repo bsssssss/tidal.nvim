@@ -1,57 +1,108 @@
 local config = require("tidal.config")
-
+local api = vim.api
 local M = {}
 
-M.bufnr = nil
-M.win_id = nil
-M.job_id = nil
+M.buf = nil
+M.win = nil
 
-function M.create()
-	local window_id = vim.api.nvim_get_current_win()
-	if not M.bufnr then
-		M.bufnr = vim.api.nvim_create_buf(false, true)
-		vim.api.nvim_buf_set_name(M.bufnr, "GHCI")
-		M.open()
-		if M.win_id then
-			vim.api.nvim_set_current_win(M.win_id)
-			M.job_id = vim.fn.termopen(vim.o.shell)
-			vim.cmd("normal! G")
-			vim.api.nvim_set_current_win(window_id)
-		else
-			error("Cannot start ghci", vim.log.levels.ERROR)
-		end
+function M.buf_is_valid()
+	return M.buf ~= nil and vim.api.nvim_buf_is_loaded(M.buf)
+end
+
+function M.create_buf()
+	if M.buf_is_valid() then
+		return M.buf
 	end
+
+	local buf = vim.api.nvim_create_buf(true, true)
+	api.nvim_buf_set_name(buf, "[ghci - tidal]")
+	api.nvim_set_option_value("filetype", "tidal_post", {
+		buf = buf,
+		scope = "local",
+	})
+	M.buf = buf
+	M.open()
+	return buf
+end
+
+function M.is_open()
+	return M.win ~= nil and api.nvim_win_is_valid(M.win)
+end
+
+local function set_win_options()
+	vim.opt_local.buftype = "nofile"
+	vim.opt_local.bufhidden = "hide"
+	vim.opt_local.swapfile = false
+	local decorations = {
+		"number",
+		"relativenumber",
+		"modeline",
+		"wrap",
+		"cursorline",
+		"cursorcolumn",
+		"foldenable",
+		"list",
+	}
+	for _, s in ipairs(decorations) do
+		vim.opt_local[s] = false
+	end
+	vim.opt_local.colorcolumn = ""
+	vim.opt_local.foldcolumn = "0"
+	vim.opt_local.winfixwidth = true
+	vim.opt_local.tabstop = 4
+	vim.opt_local.wrap = true
+	vim.opt_local.linebreak = true
 end
 
 function M.open()
-	local postwin_config = vim.tbl_deep_extend("force", config.post_window, { win = 0 })
-	if M.bufnr and not M.win_id then
-		M.win_id = vim.api.nvim_open_win(M.bufnr, false, postwin_config)
-	else
-		error("[tidal.nvim] cannot open post window")
+	if M.is_open() then
+		return M.win
 	end
+
+	if not M.buf_is_valid() then
+		M.create_buf()
+	end
+
+	local postwin_config = vim.tbl_deep_extend("force", config.post_window, { win = 0 })
+	local win = api.nvim_open_win(M.buf, false, postwin_config)
+	local previous_win = vim.api.nvim_get_current_win()
+
+	vim.api.nvim_set_current_win(win)
+	set_win_options()
+	vim.cmd("normal! G")
+	vim.api.nvim_set_current_win(previous_win)
+	M.win = win
+
+	return win
+end
+
+function M.post(data)
+	vim.schedule(function()
+		if not M.buf_is_valid() then
+			error("[tidal.nvim] cannot write to post window, buffer doesn't exist or is invalid", vim.log.levels.ERROR)
+		end
+
+		local lines = vim.api.nvim_buf_get_lines(M.buf, -2, -1, false)
+		local last_line = lines[1] or ""
+		local appended = last_line .. data
+		local split = vim.split(appended, "\n", { plain = true })
+
+		vim.api.nvim_buf_set_lines(M.buf, -2, -1, false, split)
+	end)
 end
 
 function M.close()
-	if M.win_id and vim.api.nvim_win_is_valid(M.win_id) then
-		vim.api.nvim_win_close(M.win_id, true)
-		M.win_id = nil
+	if M.is_open() then
+		vim.api.nvim_win_close(M.win, true)
+		M.win = nil
 	end
 end
 
 function M.toggle()
-	if M.win_id and vim.api.nvim_win_is_valid(M.win_id) then
+	if M.is_open() then
 		M.close()
-	elseif M.bufnr then
-		local window_id = vim.api.nvim_get_current_win()
+	else
 		M.open()
-		if M.win_id then
-			vim.api.nvim_set_current_win(M.win_id)
-			vim.cmd("normal! G")
-			vim.api.nvim_set_current_win(window_id)
-		else
-			print("no window ID")
-		end
 	end
 end
 
