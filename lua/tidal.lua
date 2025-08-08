@@ -1,7 +1,6 @@
 -- TODO:
 -- Post window colors
 -- Add keymapping utilities
--- Figure out why `#` char reset indentation
 -- Write the api annotations and documentation
 -- Pattern highlights !
 
