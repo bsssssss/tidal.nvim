@@ -1,3 +1,9 @@
+-- TODO:
+-- Add keymapping utilities
+-- Figure out why `#` char reset indentation
+-- Write the api annotations and documentation
+-- Pattern highlights !
+
 local config = require("tidal.config")
 local editor = require("tidal.editor")
 
