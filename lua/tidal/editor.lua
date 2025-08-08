@@ -2,8 +2,6 @@ local ghci = require("tidal.ghci")
 local format = require("tidal.format")
 local M = {}
 
-local function add_filetype() end
-
 local function create_autocmds()
 	local id = vim.api.nvim_create_augroup("tidal_editor", {})
 	vim.api.nvim_create_autocmd("FileType", {
