@@ -31,6 +31,7 @@ function M.start()
 		end,
 		stderr = function(err, data)
 			postwin.post(data)
+			postwin.open()
 		end,
 	})
 	M.proc = proc
