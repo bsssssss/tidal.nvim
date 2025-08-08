@@ -6,6 +6,7 @@ local function add_filetype()
 	vim.filetype.add({
 		extension = {
 			tidal = "tidal",
+			tidal_post = "tidal_post",
 		},
 	})
 end
@@ -14,13 +15,13 @@ local function create_autocmds()
 	local id = vim.api.nvim_create_augroup("tidal_editor", {})
 	vim.api.nvim_create_autocmd("FileType", {
 		group = id,
-		pattern = "tidal",
+		pattern = { "tidal", "tidal_post" },
 		callback = require("tidal.commands"),
 	})
 	---@diagnostic disable-next-line: param-type-mismatch
 	vim.api.nvim_create_autocmd("VimLeavePre", {
 		group = id,
-		pattern = "tidal",
+		pattern = { "tidal", "tidal_post" },
 		callback = function()
 			ghci.on_close()
 		end,
