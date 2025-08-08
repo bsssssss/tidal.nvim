@@ -23,7 +23,7 @@ local function create_autocmds()
 		group = id,
 		pattern = { "tidal", "tidal_post" },
 		callback = function()
-			ghci.on_close()
+			ghci.terminate()
 		end,
 	})
 end

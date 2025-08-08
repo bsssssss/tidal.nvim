@@ -48,7 +48,7 @@ function M.hush()
 	M.send("hush")
 end
 
-function M.on_close()
+function M.terminate()
 	if M.is_running() then
 		M.proc:kill("KILL")
 	end
