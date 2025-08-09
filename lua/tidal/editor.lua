@@ -20,12 +20,6 @@ local function create_autocmds()
 end
 
 M.setup = function()
-	vim.filetype.add({
-		extension = {
-			tidal = "tidal",
-			tidal_post = "tidal_post",
-		},
-	})
 	vim.bo.commentstring = "-- %s"
 	vim.bo.smartindent = false -- prevent de-indentation on '#' char
 	create_autocmds()
