@@ -20,7 +20,7 @@ setmetatable(M, {
 
 --- Merge the user configuration with the default values.
 ---@param config {} The user configuration
-function M.resolve(config)
+function M.merge_with(config)
 	config = config or {}
 	M.config = vim.tbl_deep_extend("keep", config, default)
 end
