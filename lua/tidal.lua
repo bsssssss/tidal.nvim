@@ -11,7 +11,7 @@ local M = {}
 
 M.setup = function(opts)
 	opts = opts or {}
-	config.resolve(opts)
+	config.merge_with(opts)
 	editor.setup()
 end
 
