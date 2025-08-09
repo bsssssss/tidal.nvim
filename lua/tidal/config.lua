@@ -8,6 +8,7 @@ local default = {
 	},
 }
 
+-- Allows direct access to config table in tidal.setup function
 setmetatable(M, {
 	__index = function(self, key)
 		local config = rawget(self, "config")
@@ -19,10 +20,10 @@ setmetatable(M, {
 })
 
 --- Merge the user configuration with the default values.
----@param config {} The user configuration
-function M.merge_with(config)
-	config = config or {}
-	M.config = vim.tbl_deep_extend("keep", config, default)
+---@param user_config {} The user configuration
+function M.merge_with(user_config)
+	user_config = user_config or {}
+	M.config = vim.tbl_deep_extend("keep", user_config, default)
 end
 
 return M
