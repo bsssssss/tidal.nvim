@@ -45,8 +45,10 @@ function M.hush()
 	M.send("hush")
 end
 
+-- Does not actually kill the process on TidalStop ?
 function M.terminate()
 	if M.is_running() then
+		print("[tidal.nvim] terminating..")
 		M.proc:kill("KILL")
 	end
 end
