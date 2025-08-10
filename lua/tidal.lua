@@ -1,9 +1,3 @@
--- TODO:
--- Add keymapping utilities
--- Write the api annotations
--- Write documentation
--- Pattern highlights !
-
 local config = require("tidal.config")
 local editor = require("tidal.editor")
 
