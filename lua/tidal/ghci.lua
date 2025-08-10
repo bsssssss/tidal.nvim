@@ -9,14 +9,11 @@ function M.is_running()
 end
 
 function M.start()
-	if M.proc then
-		return M.proc
+	if M.is_running() then
+		return
 	end
 	if not config.tidal_boot then
-		error(
-			"[tidal.nvim] Cannot start ghci, you should set `tidal_boot` to your `BootFile.hs` path",
-			vim.log.levels.ERROR
-		)
+		error("[tidal.nvim] 'tidal_boot' not configured", vim.log.levels.ERROR)
 	end
 	if not postwin.buf_is_valid() then
 		postwin.create_buf()
