@@ -1,5 +1,5 @@
 local ghci = require("tidal.ghci")
-local postwin = require("tidal.postwindow")
+local postwin = require("tidal.postwin")
 local format = require("tidal.format")
 local M = {}
 

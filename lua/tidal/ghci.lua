@@ -1,4 +1,4 @@
-local postwin = require("tidal.postwindow")
+local postwin = require("tidal.postwin")
 local config = require("tidal.config")
 local M = {}
 
