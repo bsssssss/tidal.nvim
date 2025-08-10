@@ -106,6 +106,10 @@ function M.post(data)
 			error("[tidal.nvim] cannot write to post window, buffer doesn't exist or is invalid", vim.log.levels.ERROR)
 		end
 
+        if not data then
+            return
+        end
+
 		local lines = vim.api.nvim_buf_get_lines(M.buf, -2, -1, false)
 		local last_line = lines[1] or ""
 		local appended = last_line .. data
