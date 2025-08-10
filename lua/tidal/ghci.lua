@@ -48,9 +48,17 @@ end
 -- Does not actually kill the process on TidalStop ?
 function M.terminate()
 	if M.is_running() then
-		print("[tidal.nvim] terminating..")
-		M.proc:kill("KILL")
+        M.send(":quit")
+		-- M.proc:kill("TERM")
+        M.proc = nil
 	end
+end
+
+function M.restart()
+    if M.is_running() then
+        M.terminate()
+    end
+    M.start()
 end
 
 return M
