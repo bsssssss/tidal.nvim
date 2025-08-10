@@ -25,6 +25,15 @@ function M.create_buf()
 	return buf
 end
 
+function M.destroy_buf()
+	if M.buf_is_valid() then
+		api.nvim_buf_delete(M.buf, { force = true })
+	end
+	if M.is_open() then
+		M.close()
+	end
+end
+
 local function set_win_options()
 	vim.opt_local.buftype = "nofile"
 	vim.opt_local.bufhidden = "hide"
@@ -111,9 +120,9 @@ function M.post(data)
 end
 
 function M.clear()
-    if M.buf_is_valid() then
-        api.nvim_buf_set_lines(M.buf, 0, -1, false, {})
-    end
+	if M.buf_is_valid() then
+		api.nvim_buf_set_lines(M.buf, 0, -1, false, {})
+	end
 end
 
 return M
