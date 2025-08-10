@@ -8,7 +8,6 @@ local default = {
 	},
 }
 
--- Allows direct access to config table in tidal.setup function
 setmetatable(M, {
 	__index = function(self, key)
 		local config = rawget(self, "config")

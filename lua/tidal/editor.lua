@@ -25,7 +25,7 @@ M.setup = function()
 	create_autocmds()
 end
 
-function M.get_paragraph()
+local function get_paragraph()
 	local cursor_pos = vim.api.nvim_win_get_cursor(0)
 	vim.cmd('normal! vip"ty')
 	vim.api.nvim_win_set_cursor(0, cursor_pos)
@@ -34,7 +34,7 @@ function M.get_paragraph()
 end
 
 function M.eval()
-	local paragraph = M.get_paragraph()
+	local paragraph = get_paragraph()
 	local expression = format.format_expression(paragraph)
 	ghci.send(expression)
 end
