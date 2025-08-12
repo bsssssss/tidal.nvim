@@ -15,9 +15,6 @@ function M.start()
 	if not config.tidal_boot then
 		error("[tidal.nvim] 'tidal_boot' not configured", vim.log.levels.ERROR)
 	end
-	if not postwin.buf_is_valid() then
-		postwin.create_buf()
-	end
 
 	local args = "-ghci-script=" .. config.tidal_boot
 	local proc = vim.system({ "ghci", args }, {
@@ -48,17 +45,17 @@ end
 -- Does not actually kill the process on TidalStop ?
 function M.terminate()
 	if M.is_running() then
-        M.send(":quit")
+		M.send(":quit")
 		-- M.proc:kill("TERM")
-        M.proc = nil
+		M.proc = nil
 	end
 end
 
 function M.restart()
-    if M.is_running() then
-        M.terminate()
-    end
-    M.start()
+	if M.is_running() then
+		M.terminate()
+	end
+	M.start()
 end
 
 return M

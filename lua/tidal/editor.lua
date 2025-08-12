@@ -1,6 +1,7 @@
 local ghci = require("tidal.ghci")
 local postwin = require("tidal.postwin")
 local format = require("tidal.format")
+local osc = require("tidal.osc")
 local M = {}
 
 local function create_user_commands()
@@ -30,6 +31,7 @@ local function create_autocmds()
 		pattern = { "tidal", "tidal_post" },
 		callback = function()
 			ghci.terminate()
+			osc.stop_server()
 		end,
 	})
 end
@@ -38,6 +40,10 @@ M.setup = function()
 	vim.bo.commentstring = "-- %s"
 	vim.bo.smartindent = false -- prevent de-indentation on '#' char
 	create_autocmds()
+	if not postwin.buf_is_valid() then
+		postwin.create_buf()
+	end
+	osc.start_server()
 end
 
 local function get_paragraph()
