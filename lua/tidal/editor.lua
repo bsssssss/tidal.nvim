@@ -2,6 +2,7 @@ local ghci = require("tidal.ghci")
 local postwin = require("tidal.postwin")
 local format = require("tidal.format")
 local osc = require("tidal.osc")
+local patterns = require("tidal.patterns")
 local M = {}
 
 local function create_user_commands()
@@ -46,17 +47,19 @@ M.setup = function()
 	osc.start_server()
 end
 
+-- TODO: get range in buffer
 local function get_paragraph()
 	local cursor_pos = vim.api.nvim_win_get_cursor(0)
 	vim.cmd('normal! vip"ty')
 	vim.api.nvim_win_set_cursor(0, cursor_pos)
-	local expression = vim.fn.getreg("t")
-	return vim.trim(expression)
+	local expression = vim.trim(vim.fn.getreg("t"))
+	return expression
 end
 
 function M.eval()
 	local paragraph = get_paragraph()
 	local expression = format.format_expression(paragraph)
+	patterns.register(expression)
 	ghci.send(expression)
 end
 
