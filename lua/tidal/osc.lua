@@ -1,12 +1,15 @@
 local postwin = require("tidal.postwin")
 local osc = require("osc")
+local config = require("tidal.config")
 local M = {}
 
 local server = nil
 local plugin_name = "[tidal.nvim]"
 
 function M.on_receive(data)
-	postwin.post(vim.inspect(data) .. "\n")
+	if config.oscdump == true then
+		postwin.post(vim.inspect(data) .. "\n")
+	end
 end
 
 function M.start_server()
