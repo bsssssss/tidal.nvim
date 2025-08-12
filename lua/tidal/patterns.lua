@@ -24,7 +24,7 @@ end
 
 M.active = {}
 
-function M.store(expression)
+function M.register(expression)
 	local ids = get_ids(expression)
 
 	if #ids > 0 then
