@@ -4,8 +4,11 @@ local default = {
 	tidal_boot = nil,
 	oscdump = false,
 	post_window = {
-		split = "right",
-		width = math.floor(vim.o.columns / 2),
+		interpreter = true,
+		win = {
+			split = "right",
+			width = math.floor(vim.o.columns / 2),
+		},
 	},
 }
 
