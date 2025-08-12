@@ -8,6 +8,19 @@ function M.is_running()
 	return M.proc ~= nil
 end
 
+local function on_stdout(data)
+	if config.post_window.interpreter then
+		postwin.post(data)
+	end
+end
+
+local function on_stderr(data)
+	if config.post_window.interpreter then
+		postwin.post(data)
+		postwin.open()
+	end
+end
+
 function M.start()
 	if M.is_running() then
 		return
@@ -21,11 +34,10 @@ function M.start()
 		text = true,
 		stdin = true,
 		stdout = function(err, data)
-			postwin.post(data)
+			on_stdout(data)
 		end,
 		stderr = function(err, data)
-			postwin.post(data)
-			postwin.open()
+			on_stderr(data)
 		end,
 	})
 	M.proc = proc
@@ -42,7 +54,6 @@ function M.hush()
 	M.send("hush")
 end
 
--- Does not actually kill the process on TidalStop ?
 function M.terminate()
 	if M.is_running() then
 		M.send(":quit")
