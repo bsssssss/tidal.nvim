@@ -47,20 +47,19 @@ M.setup = function()
 	osc.start_server()
 end
 
--- TODO: get range in buffer
-local function get_paragraph()
+local function get_text()
 	local cursor_pos = vim.api.nvim_win_get_cursor(0)
 	vim.cmd('normal! vip"ty')
 	vim.api.nvim_win_set_cursor(0, cursor_pos)
-	local expression = vim.trim(vim.fn.getreg("t"))
-	return expression
+	local paragraph = vim.trim(vim.fn.getreg("t"))
+	return paragraph
 end
 
 function M.eval()
-	local paragraph = get_paragraph()
-	local expression = format.format_expression(paragraph)
-	patterns.register(expression)
-	ghci.send(expression)
+	local text = get_text()
+	local expr = format.format_expression(text)
+	patterns.parse(text)
+	ghci.send(expr)
 end
 
 return M

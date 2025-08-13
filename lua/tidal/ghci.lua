@@ -9,13 +9,13 @@ function M.is_running()
 end
 
 local function on_stdout(data)
-	if config.post_window.interpreter then
+	if config.postwin.interpreter then
 		postwin.post(data)
 	end
 end
 
 local function on_stderr(data)
-	if config.post_window.interpreter then
+	if config.postwin.interpreter then
 		postwin.post(data)
 		postwin.open()
 	end

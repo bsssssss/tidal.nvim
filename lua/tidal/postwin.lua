@@ -73,7 +73,7 @@ function M.open()
 			M.create_buf()
 		end
 
-		local postwin_config = vim.tbl_deep_extend("force", config.post_window.win, { win = 0 })
+		local postwin_config = vim.tbl_deep_extend("force", config.postwin.win, { win = 0 })
 		local win = api.nvim_open_win(M.buf, false, postwin_config)
 
 		local previous_win = vim.api.nvim_get_current_win()
