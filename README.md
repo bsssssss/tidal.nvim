@@ -15,10 +15,12 @@ Using lazy.nvim:
         -- set the path to the boot script file to launch ghci with
 				tidal_boot = "path/to/bootfile",
         -- configure the post window
-        post_window = {
-          split = "right",
-          width = math.floor(vim.o.columns / 2),
-	},
+        postwin = {
+          win = {
+            split = "right",
+            width = math.floor(vim.o.columns / 2),
+          },
+        },
 			})
       -- This plugin does not set keymaps by default !
 			vim.api.nvim_create_autocmd("FileType", {
