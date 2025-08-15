@@ -2,7 +2,7 @@
 
 ## Pattern highlighting
 
-We receive osc messages from tidal that look like this:
+We receive osc messages from tidal's `OSCContext` stream that look like this
 
 ```lua
 {
@@ -19,7 +19,7 @@ We receive osc messages from tidal that look like this:
 }
 ```
 
-Where the first values in messages table are:
+Where the values in messages table are:
 
 - pattern id
 - delta time (in utc time ??)
@@ -29,23 +29,11 @@ Where the first values in messages table are:
 - row end
 - col end
 
-### Pulsar tidal package
+Tidal has a the `deltaContext c r p` function that takes a column-start index
+`c`, a row index `r` and a mini-notation string `p`. This function allows tidal
+to know where the mini-notation pattern is in the editor.
 
-**The Complete Pattern Parsing System**
-
-1. Block-level parsing (editors.js) treats the entire do block as one unit for
-   evaluation
-
-2. But pattern highlighting (event-highlighter.js) works differently:
-
-- deltaContext injection: When a block is sent to Haskell, each quoted pattern
-  gets wrapped with deltaContext
-- Individual pattern tracking: Each quoted string becomes: (deltaContext
-  ${offset} ${eventId} "${content}")
-- eventId assignment: Every pattern gets a unique eventId for OSC highlighting
-  messages
-
-So for example:
+So for example, in this expression
 
 ```haskell
 do
@@ -53,43 +41,20 @@ p 1 $ s "bd sd" -- eventId: 0
 p 2 $ s "sd hh" -- eventId: 1
 ```
 
-The system sends to Haskell:
+we inject `deltaContext`
 
 ```haskell
 do
-p 1 $ s (deltaContext 9 0 "bd sd")
-p 2 $ s (deltaContext 9 1 "sd hh")
+p 1 $ s (deltaContext 9 1 "bd sd")
+p 2 $ s (deltaContext 9 2 "sd hh")
 ```
 
-Then when TidalCycles plays events, it sends OSC messages back with the eventId,
-allowing the editor to highlight the specific pattern that's currently playing.
+So when we receive osc messages back, we have the correct position for each
+playing patterns.
 
-### Lua implementation
+### Implementation
 
--- 1. Block-level parsing (for evaluation)
-
-```lua
-function parseBlocks(text)
-  return splitByEmptyLines(text)
-end
-```
-
--- 2. Pattern-level parsing (for highlighting)
-
-```lua
-function injectPatternIds(block)
-  local eventId = 0
-  local result = block:gsub(
-    '"([^"]\*)"',
-    function(content)
-      local replacement = string.format('(deltaContext %d %d "%s")', pos, eventId, content)
-      eventId = eventId + 1
-      return replacement
-    end
-  )
-  return result
-end
-```
+hnnnnnnn
 
 ### References
 
