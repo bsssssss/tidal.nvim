@@ -1,8 +1,6 @@
 local Repl = require("tidal.util.repl.repl")
 
 ---@class Ghci : Repl
----@field buf Buffer
----@field proc integer
 local Ghci = Repl:new()
 Ghci.__index = Ghci
 
