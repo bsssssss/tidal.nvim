@@ -44,7 +44,7 @@ local defaults = {
     send_block = { mode = { "i", "n", "x" }, key = "<M-CR>" },
     send_node = { mode = "n", key = "<leader><CR>" },
     send_silence = { mode = "n", key = "<leader>d" },
-    send_hush = { mode = "n", key = "<leader><Esc>" },
+    send_hush = { mode = "n", key = "<leader>h" },
   },
   ---- Configure highlight applied to selections sent to tidal interpreter
   selection_highlight = {

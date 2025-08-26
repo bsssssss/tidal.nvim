@@ -2,6 +2,7 @@ local api = require("tidal.api")
 local config = require("tidal.config")
 local message = require("tidal.core.message")
 local notify = require("tidal.util.notify")
+local state = require("tidal.core.state")
 
 local Tidal = {}
 
@@ -24,6 +25,16 @@ local keymaps = {
 
 local function setup_user_commands()
   vim.api.nvim_create_user_command("TidalLaunch", function()
+    api.launch_tidal(config.options.boot)
+  end, { desc = "Launch Tidal instance" })
+  vim.api.nvim_create_user_command("TidalNotification", function()
+    if state.ghci then
+      state.ghci:showNotificationBuffer()
+    end
+  end, { desc = "Launch Tidal Notification Buffer" })
+  vim.api.nvim_create_user_command("TidalQuit", api.exit_tidal, { desc = "Quit Tidal instance" })
+
+  vim.api.nvim_create_user_command("Tidal", function()
     api.launch_tidal(config.options.boot)
   end, { desc = "Launch Tidal instance" })
   vim.api.nvim_create_user_command("TidalQuit", api.exit_tidal, { desc = "Quit Tidal instance" })

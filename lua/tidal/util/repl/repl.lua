@@ -22,18 +22,15 @@ function Repl:new(opts)
   opts = opts or {}
   local obj = {}
   setmetatable(obj, self)
-  obj.buf = Buffer.new({
-    name = opts.name,
-    scratch = true,
-    listed = false,
-  })
   obj.opts = opts
 
   return obj
 end
 
-local uv, api, fn = vim.loop, vim.api, vim.fn
-local M, proc, stdin = {}, nil, nil
+local uv, api, _ = vim.loop, vim.api, vim.fn
+local _, proc, stdin = {}, nil, nil
+local stdout = {}
+local stderr = {}
 
 local function attach(pipe, label, buf)
   local buf_acc = ""
@@ -78,8 +75,10 @@ function Repl:start(opts)
     return vim.notify("[tidal-fast] already running", vim.log.levels.INFO)
   end
 
+  self.opts = vim.tbl_deep_extend("force", {}, self.opts, opts or {})
+
   stdin = uv.new_pipe(false)
-  local stdout, stderr = uv.new_pipe(false), uv.new_pipe(false)
+  stdout, stderr = uv.new_pipe(false), uv.new_pipe(false)
 
   proc = uv.spawn(self.opts.cmd, { args = self.opts.args, stdio = { stdin, stdout, stderr } }, function(code, signal)
     for _, p in ipairs({ stdin, stdout, stderr }) do
@@ -100,28 +99,26 @@ function Repl:start(opts)
   local buf = api.nvim_create_buf(false, true)
   api.nvim_buf_set_name(buf, "tidal-fast://ghci")
 
-  self.buf:show(opts or {})
+  vim.notify("[tidal-fast] ghci started (pipe mode): " .. self.opts.cmd, vim.log.levels.INFO)
+
+  return self
+end
+
+function Repl:showNotificationBuffer()
+  if self.buf == nil then
+    self.buf = Buffer.new({
+      name = self.opts.name,
+      scratch = true,
+      listed = false,
+    })
+  end
+
+  self.buf:show(self.opts or {})
 
   self.buf:set_option("filetype", "haskell")
 
   attach(stdout, "stdout", self.buf)
   attach(stderr, "stderr", self.buf)
-
-  vim.notify("[tidal-fast] ghci started (pipe mode): " .. self.opts.cmd, vim.log.levels.INFO)
-
-  -- if self.proc == nil then
-  --   self.buf:show(opts or {})
-  --   self.proc = vim.fn.jobstart(vim.list_extend({ self.opts.cmd }, self.opts.args or {}), {
-  --     term = true,
-  --     on_exit = function(code, signal)
-  --       self.buf:delete()
-  --       if self.opts.on_exit then
-  --         self.opts.on_exit(code, signal)
-  --       end
-  --     end,
-  --   })
-  -- end
-  return self
 end
 
 --- Send text to REPL
