@@ -33,6 +33,19 @@ function Marker.createMarkers(ranges, lineNumber, eventId)
   end
 end
 
+function Marker.countNsExtmarks()
+  local count = 0
+  for _, buf in ipairs(vim.api.nvim_list_bufs()) do
+    if vim.api.nvim_buf_is_loaded(buf) then
+      -- get all extmarks in this buffer for this namespace
+      local marks = vim.api.nvim_buf_get_extmarks(buf, Marker.ns, 0, -1, {})
+      count = count + #marks
+    end
+  end
+
+  return count
+end
+
 function Marker.count()
   local count = 0
   if Marker.extMarks then
@@ -69,6 +82,17 @@ function Marker.print()
   end
 end
 
+function Marker.deleteAllMarkers()
+  -- Wiping complete namespace
+  for _, buf in ipairs(vim.api.nvim_list_bufs()) do
+    if vim.api.nvim_buf_is_loaded(buf) then
+      vim.api.nvim_buf_clear_namespace(buf, Marker.ns, 0, -1)
+    end
+  end
+
+  Marker.extMarks = {} -- eventId -> col -> ExtMark
+end
+
 function Marker.cleanUpMarkers(startRow, endRow)
   for eventId, markers in pairs(Marker.extMarks) do
     for col, extmark in pairs(markers) do
@@ -79,38 +103,6 @@ function Marker.cleanUpMarkers(startRow, endRow)
         vim.api.nvim_buf_del_extmark(extmark.buf, Marker.ns, extmark.markerId)
         Marker.extMarks[eventId][col] = nil
       end
-    end
-  end
-end
-
-function Marker.addAllHighlights()
-  for _, markers in pairs(Marker.extMarks) do
-    for _, marker in pairs(markers) do
-      local oldMarker = vim.api.nvim_buf_get_extmark_by_id(marker.buf, Marker.ns, marker.markerId, {})
-
-      if oldMarker[2] > 0 then
-        -- Create Highlight
-        vim.api.nvim_buf_set_extmark(marker.buf, Marker.ns, oldMarker[1], oldMarker[2], {
-          end_col = marker.colEnd,
-          id = marker.markerId,
-          hl_group = "CodeHighlight",
-        })
-      end
-    end
-  end
-end
-
-function Marker.removeAllHighlights()
-  for _, markers in pairs(Marker.extMarks.eventid) do
-    for _, marker in pairs(markers) do
-      local oldMarker = vim.api.nvim_buf_get_extmark_by_id(marker.buf, Marker.ns, marker.markerId, {})
-
-      -- Delete Highlight
-      vim.api.nvim_buf_set_extmark(marker.buf, Marker.ns, oldMarker[1], oldMarker[2], {
-        end_col = marker.colEnd,
-        id = marker.markerId,
-        hl_group = nil,
-      })
     end
   end
 end

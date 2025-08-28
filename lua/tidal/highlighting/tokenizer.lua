@@ -7,7 +7,7 @@ local textProcessor = require("tidal.highlighting.textprocessor")
 local lastEventId = 0
 
 local function addDeltaContext(line, eventId)
-  local result = line:gsub(textProcessor.controlPatternsRegex(), function(startPos, content, endPos)
+  local result = line:gsub(textProcessor.controlPatternsRegex(), function(startPos, content, _)
     local before = line:sub(1, startPos - 1)
 
     if before:match(textProcessor.exceptedFunctionPatterns()) then
