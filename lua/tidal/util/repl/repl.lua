@@ -32,7 +32,7 @@ local _, proc, stdin = {}, nil, nil
 local stdout = {}
 local stderr = {}
 
-local marker = require("tidal.highlighting.marker")
+local highlights = require("tidal.highlighting.highlights")
 local tokenizer = require("tidal.highlighting.tokenizer")
 
 local function attach(pipe, label, buf)
@@ -128,20 +128,23 @@ end
 --- @generic T
 --- @return T for method chaining
 function Repl:send(text, start)
-  -- vim.notify("[tidal-fast] Repl send received", vim.log.levels.INFO)
-  if stdin and not stdin:is_closing() then
-    stdin:write(text)
-  end
+  local enrichedText = {}
 
   local rowIndex = 0
   local rowStart = start[1]
 
   for line in text:gmatch("[^\r\n]+") do
-    tokenizer.addMetadata(line, rowStart + rowIndex)
+    local enrichedLine = tokenizer.addMetadata(line, rowStart + rowIndex)
+    table.insert(enrichedText, enrichedLine)
     rowIndex = rowIndex + 1
   end
 
-  marker.addAllHighlights()
+  text = table.concat(enrichedText, "\n") .. "\n"
+
+  -- vim.notify("[tidal-fast] Repl send received", vim.log.levels.INFO)
+  if stdin and not stdin:is_closing() then
+    stdin:write(text)
+  end
 
   if self.proc == nil then
     -- not running - error?

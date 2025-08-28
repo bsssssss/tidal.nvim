@@ -39,11 +39,11 @@ end
 
 -- marker.deleteAllMarkers()
 
-for _, markers in pairs(marker.extMarks) do
-  for _, extmark in pairs(markers) do
-    highlights.removeHighlight(extmark.buf, extmark.markerId, extmark.row, extmark.colStart, extmark.colEnd)
-  end
-end
+-- for _, markers in pairs(marker.extMarks) do
+--   for _, extmark in pairs(markers) do
+--     highlights.removeHighlight(extmark.buf, extmark.markerId, extmark.row, extmark.colStart, extmark.colEnd)
+--   end
+-- end
 -- local singleLine = [[d4 $ s "sally" <| note "c'maj'8"]]
 --
 -- local bg = "#7eaefc"

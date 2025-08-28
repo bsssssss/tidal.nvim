@@ -14,8 +14,9 @@ local function addDeltaContext(line, eventId)
       return '"' .. content .. '"'
     end
 
-    return string.format('(deltaContext %d %d "%s")', startPos - 1, eventId, content)
+    return string.format('(deltaContext %i %i "%s")', startPos - 1, eventId, content)
   end)
+
   return result
 end
 

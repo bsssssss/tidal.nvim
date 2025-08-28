@@ -74,7 +74,7 @@ function Marker.print()
             .. extmark.colStart
             .. " | colEnd: "
             .. extmark.colEnd
-            .. " | looCol: "
+            .. " | loopCol: "
             .. col
         )
       end
