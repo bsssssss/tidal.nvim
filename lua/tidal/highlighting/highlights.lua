@@ -5,7 +5,7 @@ local Marker = require("tidal.highlighting.marker")
 function Highlights.addHighlight(buf, markerId, row, colStart, colEnd)
   local extMark = vim.api.nvim_buf_get_extmark_by_id(buf, Marker.ns, markerId, {})
 
-  if extMark[2] > 0 then
+  if #extMark > 0 and extMark[2] > 0 then
     -- Create Highlight
     vim.api.nvim_buf_set_extmark(buf, Marker.ns, row, colStart, {
       end_col = colEnd,
@@ -35,7 +35,7 @@ end
 function Highlights.removeHighlight(buf, markerId, row, colStart, colEnd)
   local extMark = vim.api.nvim_buf_get_extmark_by_id(buf, Marker.ns, markerId, {})
 
-  if extMark[2] > 0 then
+  if #extMark > 0 and extMark[2] > 0 then
     -- Create Highlight
     vim.api.nvim_buf_set_extmark(buf, Marker.ns, row, colStart, {
       end_col = colEnd,

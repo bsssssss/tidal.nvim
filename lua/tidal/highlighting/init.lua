@@ -1,66 +1,60 @@
-package.loaded["tidal.highlighting.marker"] = nil
-package.loaded["tidal.highlighting.highlights"] = nil
-package.loaded["tidal.highlighting.tokenizer"] = nil
+local EventHighlights = {}
 
 local highlights = require("tidal.highlighting.highlights")
-local marker = require("tidal.highlighting.marker")
-local tokenizer = require("tidal.highlighting.tokenizer")
+local osc = require("tidal.highlighting.osc")
 
-local multiLineExample = [[
-:{
-  do
-    d4 $ s "sally" <| note "c'maj'8"
-    d2 $ while "t*2 t" (# silence) $ s "fbass"
-    d3 $ s "sally" <| note "c'maj'8"
-    d1 $ s "superpiano" <| note "c a f e"
-    d5 $ s "bubu" # speed "-1.0"
-:}
-]]
+local uv = vim.uv
 
-local bg = "#7eaefc"
-vim.api.nvim_set_hl(0, "CodeHighlight", { bg = bg, foreground = "#000000" })
+EventHighlights.timer = nil
 
-local initRow = 10
-local rowIndex = 0
-local _, newlines = multiLineExample:gsub("\n", "")
-
-marker.cleanUpMarkers(initRow, initRow + newlines - 1)
-
-for line in multiLineExample:gmatch("[^\r\n]+") do
-  tokenizer.addMetadata(line, initRow + rowIndex)
-  rowIndex = rowIndex + 1
-end
-
-for _, markers in pairs(marker.extMarks) do
-  for _, extmark in pairs(markers) do
-    highlights.addHighlight(extmark.buf, extmark.markerId, extmark.row, extmark.colStart, extmark.colEnd)
+local function merge_arrays_of_tables(t1, t2)
+  local res = {}
+  for _, v in ipairs(t1) do
+    table.insert(res, v)
   end
+  for _, v in ipairs(t2) do
+    table.insert(res, v)
+  end
+  return res
 end
 
--- marker.deleteAllMarkers()
+local function handleMessages()
+  local diff = osc.diffEventLists(osc.activeMessages, osc.messageBuffer)
 
--- for _, markers in pairs(marker.extMarks) do
---   for _, extmark in pairs(markers) do
---     highlights.removeHighlight(extmark.buf, extmark.markerId, extmark.row, extmark.colStart, extmark.colEnd)
---   end
--- end
--- local singleLine = [[d4 $ s "sally" <| note "c'maj'8"]]
---
--- local bg = "#7eaefc"
--- vim.api.nvim_set_hl(0, "CodeHighlight", { bg = bg, foreground = "#000000" })
---
--- local initRow = 43
---
--- print(marker.count())
---
--- tokenizer.addMetadata(singleLine, initRow)
---
--- print(marker.count())
---
--- marker.cleanUpMarkers(initRow, initRow)
---
--- marker.addAllHighlights()
---
--- marker.cleanUpMarkers(initRow, initRow)
---
--- print(marker.count())
+  for _, evt in ipairs(diff.added) do
+    highlights.addHighlight(evt.buf, evt.markerId, evt.row, evt.colStart, evt.colEnd)
+  end
+
+  for _, evt in ipairs(diff.removed) do
+    highlights.removeHighlight(evt.buf, evt.markerId, evt.row, evt.colStart, evt.colEnd)
+  end
+
+  osc.activeMessages = merge_arrays_of_tables(diff.active, diff.added)
+  osc.messageBuffer = {}
+end
+
+local function setInterval(interval, callback)
+  EventHighlights.timer = uv.new_timer()
+  EventHighlights.timer:start(interval, interval, function()
+    vim.schedule(callback)
+  end)
+end
+
+-- And clearInterval
+local function clearInterval()
+  EventHighlights.timer:stop()
+  EventHighlights.timer:close()
+  EventHighlights.timer = nil
+end
+
+function EventHighlights.start(fps)
+  osc.launch()
+
+  setInterval(fps, handleMessages)
+end
+
+function EventHighlights.stop()
+  clearInterval()
+end
+
+return EventHighlights
