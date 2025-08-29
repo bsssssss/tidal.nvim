@@ -32,6 +32,9 @@ local _, proc, stdin = {}, nil, nil
 local stdout = {}
 local stderr = {}
 
+local marker = require("tidal.highlighting.marker")
+local tokenizer = require("tidal.highlighting.tokenizer")
+
 local function attach(pipe, label, buf)
   local buf_acc = ""
   pipe:read_start(function(err, data)
@@ -124,7 +127,26 @@ end
 --- Send text to REPL
 --- @generic T
 --- @return T for method chaining
-function Repl:send(text)
+function Repl:send(text, start)
+  local enrichedText = {}
+
+  local rowIndex = 0
+  local rowStart = start[1]
+
+  for line in text:gmatch("[^\r\n]+") do
+    local enrichedLine = tokenizer.addMetadata(line, rowStart + rowIndex)
+    table.insert(enrichedText, enrichedLine)
+    rowIndex = rowIndex + 1
+
+    if line:match("^hush") ~= nil then
+      marker.deleteAllMarkers()
+      tokenizer.lastEventId = 0
+    end
+  end
+
+  text = table.concat(enrichedText, "\n") .. "\n"
+
+  -- vim.notify("[tidal-fast] Repl send received", vim.log.levels.INFO)
   if stdin and not stdin:is_closing() then
     stdin:write(text)
   end
@@ -143,16 +165,16 @@ end
 ---@param text string
 --- @generic T
 --- @return T for method chaining
-function Repl:send_line(text)
-  return self:send(text .. "\n")
+function Repl:send_line(text, start)
+  return self:send(text .. "\n", start)
 end
 
 --- Send multi-line text to REPL
 --- @param lines string[]
 --- @generic T
 --- @return T for method chaining
-function Repl:send_multiline(lines)
-  return self:send_line(table.concat(lines, "\n"))
+function Repl:send_multiline(lines, start)
+  return self:send_line(table.concat(lines, "\n"), start)
 end
 
 --- Close the REPL

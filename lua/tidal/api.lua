@@ -1,4 +1,5 @@
 local boot = require("tidal.core.boot")
+local marker = require("tidal.highlighting.marker")
 local message = require("tidal.core.message")
 local notify = require("tidal.util.notify")
 local select = require("tidal.util.select")
@@ -88,7 +89,9 @@ function M.send_line()
     require("tidal.core.highlight").apply_highlight(line.start, line.finish)
     local repl = ft_to_repl()
     if repl then
-      repl.send_line(text)
+      marker.cleanUpMarkers(line.start[1] + 1, line.start[1] + 1)
+
+      repl.send_line(text, line.start)
     end
   end
 end
@@ -114,7 +117,7 @@ function M.send_block()
   require("tidal.core.highlight").apply_highlight(block.start, block.finish)
   local repl = ft_to_repl()
   if repl then
-    repl.send_multiline(block.lines)
+    repl.send_multiline(block.lines, block.start)
   end
 end
 

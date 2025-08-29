@@ -16,20 +16,21 @@ end
 
 --- Send a line of text to the tidal interpreter
 ---@param text string
-function M.tidal.send_line(text)
+function M.tidal.send_line(text, start)
   if not state.ghci then
     return
   end
-  state.ghci:send_line(text)
+
+  state.ghci:send_line(text, { start[1] + 1, start[2] })
 end
 
 --- Send multiline text to the tidal interpreter
 ---@param lines string[]
-function M.tidal.send_multiline(lines)
+function M.tidal.send_multiline(lines, start)
   if not state.ghci then
     return
   end
-  state.ghci:send_multiline(lines)
+  state.ghci:send_multiline(lines, start)
 end
 
 --- --- Send a text contained in a motion to the tidal interpreter
