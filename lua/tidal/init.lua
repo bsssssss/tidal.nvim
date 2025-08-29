@@ -17,7 +17,7 @@ local keymaps = {
   send_silence = { callback = api.send_silence, desc = "Send 'd{count} silence' to tidal" },
   send_hush = {
     callback = function()
-      message.tidal.send_line("hush")
+      message.tidal.send_line("hush", { 0, 0 })
     end,
     desc = "Send 'hush' to tidal",
   },

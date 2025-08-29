@@ -32,7 +32,7 @@ local _, proc, stdin = {}, nil, nil
 local stdout = {}
 local stderr = {}
 
-local highlights = require("tidal.highlighting.highlights")
+local marker = require("tidal.highlighting.marker")
 local tokenizer = require("tidal.highlighting.tokenizer")
 
 local function attach(pipe, label, buf)
@@ -137,6 +137,11 @@ function Repl:send(text, start)
     local enrichedLine = tokenizer.addMetadata(line, rowStart + rowIndex)
     table.insert(enrichedText, enrichedLine)
     rowIndex = rowIndex + 1
+
+    if line:match("^hush") ~= nil then
+      marker.deleteAllMarkers()
+      tokenizer.lastEventId = 0
+    end
   end
 
   text = table.concat(enrichedText, "\n") .. "\n"

@@ -1,20 +1,19 @@
 local Tokenizer = {}
 
-package.loaded["tidal.highlighting.textprocessor"] = nil
+local lineProcessor = require("tidal.highlighting.lineprocessor")
 local marker = require("tidal.highlighting.marker")
-local textProcessor = require("tidal.highlighting.textprocessor")
 
-local lastEventId = 0
+Tokenizer.lastEventId = 0
 
-local function addDeltaContext(line, eventId)
-  local result = line:gsub(textProcessor.controlPatternsRegex(), function(startPos, content, _)
+local function addDeltaContext(line)
+  local result = line:gsub(lineProcessor.controlPatternsRegex(), function(startPos, content, _)
     local before = line:sub(1, startPos - 1)
 
-    if before:match(textProcessor.exceptedFunctionPatterns()) then
+    if before:match(lineProcessor.exceptedFunctionPatterns()) then
       return '"' .. content .. '"'
     end
 
-    return string.format('(deltaContext %i %i "%s")', startPos - 1, eventId, content)
+    return string.format('(deltaContext %i %i "%s")', startPos - 1, Tokenizer.lastEventId, content)
   end)
 
   return result
@@ -22,7 +21,7 @@ end
 
 local function findReplacementRanges(line)
   local replacements = {}
-  textProcessor.findTidalWordRanges(line, function(replacement)
+  lineProcessor.findTidalWordRanges(line, function(replacement)
     table.insert(replacements, replacement)
   end)
 
@@ -30,7 +29,7 @@ local function findReplacementRanges(line)
 end
 
 local function updateEventId()
-  lastEventId = lastEventId + 1
+  Tokenizer.lastEventId = Tokenizer.lastEventId + 1
 end
 
 function Tokenizer.addMetadata(line, lineNumber)
@@ -43,8 +42,8 @@ function Tokenizer.addMetadata(line, lineNumber)
     -- 4. addDeltaContext
     --
     updateEventId()
-    marker.createMarkers(replacements, lineNumber, lastEventId)
-    return addDeltaContext(line, lastEventId)
+    marker.createMarkers(replacements, lineNumber, Tokenizer.lastEventId)
+    return addDeltaContext(line)
   else
     return line
   end
