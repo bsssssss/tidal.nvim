@@ -22,7 +22,7 @@ local function handleMessages()
   local diff = osc.diffEventLists(osc.activeMessages, osc.messageBuffer)
 
   for _, evt in ipairs(diff.added) do
-    highlights.addHighlight(evt.buf, evt.markerId, evt.row, evt.colStart, evt.colEnd)
+    highlights.addHighlight(evt.id, evt.buf, evt.markerId, evt.row, evt.colStart, evt.colEnd)
   end
 
   for _, evt in ipairs(diff.removed) do

@@ -2,7 +2,25 @@ local Highlights = {}
 
 local Marker = require("tidal.highlighting.marker")
 
-function Highlights.addHighlight(buf, markerId, row, colStart, colEnd)
+vim.api.nvim_set_hl(0, "CodeHighlight", { bg = "#7eaefc", foreground = "#000000" })
+local fn = vim.fn
+
+local function selectHlGroup(id)
+  local hlName = "CodeHighlight" .. id
+  local hlId = fn.hlID(hlName)
+
+  if hlId > 0 then
+    return hlName
+  else
+    return "CodeHighlight"
+  end
+end
+
+function Highlights.addHl(id, color)
+  vim.api.nvim_set_hl(0, "CodeHighlight" .. id, { bg = color, foreground = "#000000" })
+end
+
+function Highlights.addHighlight(id, buf, markerId, row, colStart, colEnd)
   local extMark = vim.api.nvim_buf_get_extmark_by_id(buf, Marker.ns, markerId, {})
 
   if #extMark > 0 and extMark[2] > 0 then
@@ -10,7 +28,7 @@ function Highlights.addHighlight(buf, markerId, row, colStart, colEnd)
     vim.api.nvim_buf_set_extmark(buf, Marker.ns, row, colStart, {
       end_col = colEnd,
       id = markerId,
-      hl_group = "CodeHighlight",
+      hl_group = selectHlGroup(id),
     })
   end
 end

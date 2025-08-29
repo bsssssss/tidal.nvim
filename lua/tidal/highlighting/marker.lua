@@ -4,9 +4,6 @@ Marker.extMarks = {} -- eventId -> col -> ExtMark
 
 Marker.ns = vim.api.nvim_create_namespace("tidalEventHighlighting")
 
-local bg = "#7eaefc"
-vim.api.nvim_set_hl(0, "CodeHighlight", { bg = bg, foreground = "#000000" })
-
 function Marker.createMarkers(ranges, lineNumber, eventId)
   local curr_buf = vim.api.nvim_get_current_buf()
   for _, value in ipairs(ranges) do
