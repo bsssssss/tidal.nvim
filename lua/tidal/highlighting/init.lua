@@ -47,10 +47,11 @@ local function clearInterval()
   EventHighlights.timer = nil
 end
 
-function EventHighlights.start(fps)
-  osc.launch()
+function EventHighlights.start(highlight, highlightStyle)
+  local fpsToMs = 1000 / highlight.fps
+  osc.launch(highlight, highlightStyle)
 
-  setInterval(fps, handleMessages)
+  setInterval(fpsToMs, handleMessages)
 end
 
 function EventHighlights.stop()

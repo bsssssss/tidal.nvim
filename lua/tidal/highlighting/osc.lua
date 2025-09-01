@@ -75,7 +75,6 @@ local function startServer(host, port)
 end
 
 local function startStyleServer(host, port)
-  print("OSC Server was created: " .. host .. " | " .. port)
   local transport = pluginLibUv.new({ recvAddr = host, recvPort = port })
   local osc = losc.new({ plugin = transport })
 
@@ -84,7 +83,6 @@ local function startStyleServer(host, port)
       local msg = data.message
       local id = msg[1]
       local color = msg[2]
-      print("id: " .. id .. " | color: " .. color)
       highlight.addHl(id, color)
     end)
   end)
@@ -92,9 +90,9 @@ local function startStyleServer(host, port)
   osc:open()
 end
 
-function OSC.launch()
-  startServer("127.0.0.1", 6013)
-  startStyleServer("127.0.0.1", 3335)
+function OSC.launch(senderOsc, styleOsc)
+  startServer(senderOsc.osc.ip, senderOsc.osc.port)
+  startStyleServer(styleOsc.osc.ip, styleOsc.osc.port)
 end
 
 return OSC

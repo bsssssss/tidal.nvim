@@ -36,15 +36,15 @@ local uv = vim.uv
 
 local relpath = (...):gsub("%.[^%.]+$", "")
 relpath = relpath:gsub("%.[^%.]+$", "")
-local Timetag = require(relpath .. ".timetag")
 local Pattern = require(relpath .. ".pattern")
+local Timetag = require(relpath .. ".timetag")
 
 local function print_data(data)
-	local msg = data.message
-	print("address: " .. msg.address, "timestamp: " .. data.timestamp)
-	for index, argument in ipairs(msg) do
-		print("index: " .. index, "arg: " .. argument)
-	end
+  local msg = data.message
+  print("address: " .. msg.address, "timestamp: " .. data.timestamp)
+  for index, argument in ipairs(msg) do
+    print("index: " .. index, "arg: " .. argument)
+  end
 end
 local Packet = require(relpath .. ".packet")
 
@@ -67,19 +67,19 @@ M.precision = 1000
 --   ignore_late = true, -- ignore late bundles
 -- }
 function M.new(options)
-	local self = setmetatable({}, M)
-	self.options = options or {}
-	self.handle = uv.new_udp("inet")
-	assert(self.handle, "Could not create UDP handle.")
-	return self
+  local self = setmetatable({}, M)
+  self.options = options or {}
+  self.handle = uv.new_udp("inet")
+  assert(self.handle, "Could not create UDP handle.")
+  return self
 end
 
 --- Create a Timetag with the current time.
 -- Precision is in milliseconds.
 -- @return Timetag object with current time.
 function M:now() -- luacheck: ignore
-	local s, m = uv.gettimeofday()
-	return Timetag.new(s, m / M.precision)
+  local s, m = uv.gettimeofday()
+  return Timetag.new(s, m / M.precision)
 end
 
 --- Schedule a OSC method for dispatch.
@@ -87,13 +87,13 @@ end
 -- @tparam number timestamp When to schedule the bundle.
 -- @tparam function handler The OSC handler to call.
 function M:schedule(timestamp, handler) -- luacheck: ignore
-	timestamp = math.max(0, timestamp)
-	if timestamp > 0 then
-		local timer = uv.new_timer()
-		timer:start(timestamp, 0, handler)
-	else
-		handler()
-	end
+  timestamp = math.max(0, timestamp)
+  if timestamp > 0 then
+    local timer = uv.new_timer()
+    timer:start(timestamp, 0, handler)
+  else
+    handler()
+  end
 end
 
 --- Start UDP server.
@@ -102,38 +102,38 @@ end
 --
 
 function M:open(host, port)
-	host = host or self.options.recvAddr
-	port = port or self.options.recvPort
-	local ok, err = self.handle:bind(host, port, { reuseaddr = true })
+  host = host or self.options.recvAddr
+  port = port or self.options.recvPort
+  local ok, err = self.handle:bind(host, port, { reuseaddr = true })
 
-	if ok ~= 0 then
-		print("UDP bind failed: " .. tostring(err))
-	end
+  if ok ~= 0 then
+    print("UDP bind failed: " .. tostring(err))
+  end
 
-	self.handle:recv_start(function(err, data, addr)
-		assert(not err, err)
-		if data then
-			self.remote_info = addr
+  self.handle:recv_start(function(err, data, addr)
+    assert(not err, err)
+    if data then
+      self.remote_info = addr
 
-			local ok, errormsg = pcall(Pattern.dispatch, data, self)
-			if not ok then
-				vim.schedule_wrap(function()
-					print(errormsg)
-				end)
-			end
-		end
-	end)
-	-- updated if port 0 is passed in as default (chooses a random port)
-	self.options.recvPort = self.handle:getsockname().port
+      local ok, errormsg = pcall(Pattern.dispatch, data, self)
+      if not ok then
+        vim.schedule(function()
+          print("losc dispatch error:", errormsg)
+        end)
+      end
+    end
+  end)
+  -- updated if port 0 is passed in as default (chooses a random port)
+  self.options.recvPort = self.handle:getsockname().port
 end
 
 --- Close UDP server.
 function M:close()
-	self.handle:recv_stop()
-	if not self.handle:is_closing() then
-		self.handle:close()
-	end
-	uv.walk(uv.close)
+  self.handle:recv_stop()
+  if not self.handle:is_closing() then
+    self.handle:close()
+  end
+  uv.walk(uv.close)
 end
 
 --- Send a OSC packet.
@@ -141,10 +141,10 @@ end
 -- @tparam[opt] string address The IP address to send to.
 -- @tparam[opt] number port The port to send to.
 function M:send(packet, address, port)
-	address = address or self.options.sendAddr
-	port = port or self.options.sendPort
-	packet = assert(Packet.pack(packet))
-	self.handle:try_send(packet, address, port)
+  address = address or self.options.sendAddr
+  port = port or self.options.sendPort
+  packet = assert(Packet.pack(packet))
+  self.handle:try_send(packet, address, port)
 end
 
 return M

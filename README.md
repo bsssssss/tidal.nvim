@@ -22,16 +22,16 @@ eg [lazy.nvim](https://github.com/folke/lazy.nvim)
 
 ```lua
 return {
-	"grddavies/tidal.nvim",
-	opts = {
-		-- Your configuration here
-		-- See configuration section for defaults
-	},
-	-- Recommended: Install TreeSitter parsers for Haskell and SuperCollider
-	dependencies = {
-		"nvim-treesitter/nvim-treesitter",
-		opts = { ensure_installed = { "haskell", "supercollider" } },
-	},
+ "grddavies/tidal.nvim",
+ opts = {
+  -- Your configuration here
+  -- See configuration section for defaults
+ },
+ -- Recommended: Install TreeSitter parsers for Haskell and SuperCollider
+ dependencies = {
+  "nvim-treesitter/nvim-treesitter",
+  opts = { ensure_installed = { "haskell", "supercollider" } },
+ },
 }
 ```
 
@@ -50,6 +50,19 @@ return {
       --- Tidal boot file path
       file = vim.api.nvim_get_runtime_file("bootfiles/BootTidal.hs", false)[1],
       enabled = true,
+      highlight = {
+        osc = {
+          ip = "127.0.0.1",
+          port = 6013,
+        },
+        fps = 30,
+      },
+      highlightStyle = {
+        osc = {
+          ip = "127.0.0.1",
+          port = 3335,
+        },
+      },
     },
     sclang = {
       --- Command to launch SuperCollider

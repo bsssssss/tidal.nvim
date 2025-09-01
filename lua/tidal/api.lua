@@ -1,4 +1,5 @@
 local boot = require("tidal.core.boot")
+local highlight = require("tidal.highlighting")
 local marker = require("tidal.highlighting.marker")
 local message = require("tidal.core.message")
 local notify = require("tidal.util.notify")
@@ -27,6 +28,14 @@ function M.launch_tidal(args)
   end
   vim.api.nvim_set_current_win(current_win)
   state.launched = true
+end
+
+function M.start_event_highlighting(args)
+  highlight.start(args.highlight, args.highlightStyle)
+end
+
+function M.stop_event_highlighting()
+  highlight.stop()
 end
 
 --- Quit Tidal session

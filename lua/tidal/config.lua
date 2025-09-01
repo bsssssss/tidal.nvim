@@ -24,6 +24,19 @@ local defaults = {
       --- Tidal boot file path
       file = vim.api.nvim_get_runtime_file("bootfiles/BootTidal.hs", false)[1],
       enabled = true,
+      highlight = {
+        osc = {
+          ip = "127.0.0.1",
+          port = 6013,
+        },
+        fps = 30,
+      },
+      highlightStyle = {
+        osc = {
+          ip = "127.0.0.1",
+          port = 3335,
+        },
+      },
     },
     sclang = {
       --- Command to launch SuperCollider
