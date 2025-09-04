@@ -16,6 +16,7 @@ function Marker.createMarkers(ranges, lineNumber, eventId)
       local safe_end_col = math.min(value.range_end, line_len)
 
       local markerId = vim.api.nvim_buf_set_extmark(curr_buf, Marker.ns, lineNumber - 1, value.range_start - 1, {
+        end_row = lineNumber - 1,
         end_col = safe_end_col, -- until EOL
       })
 

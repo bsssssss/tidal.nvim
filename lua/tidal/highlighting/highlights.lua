@@ -20,15 +20,16 @@ function Highlights.addHl(id, color)
   vim.api.nvim_set_hl(0, "CodeHighlight" .. id, { bg = color, foreground = "#000000" })
 end
 
-function Highlights.addHighlight(id, buf, markerId, row, colStart, colEnd)
-  local extMark = vim.api.nvim_buf_get_extmark_by_id(buf, Marker.ns, markerId, {})
+function Highlights.addHighlight(id, buf, markerId)
+  local extMark = vim.api.nvim_buf_get_extmark_by_id(buf, Marker.ns, markerId, { details = true })
 
-  if #extMark > 0 and extMark[2] > 0 then
+  if #extMark > 0 and extMark[1] > 0 and extMark[2] > 0 then
     -- Create Highlight
-    vim.api.nvim_buf_set_extmark(buf, Marker.ns, row, colStart, {
-      end_col = colEnd,
+    vim.api.nvim_buf_set_extmark(buf, Marker.ns, extMark[1], extMark[2], {
+      end_col = extMark[3].end_col,
       id = markerId,
       hl_group = selectHlGroup(id),
+      end_row = extMark[3].end_row,
     })
   end
 end
@@ -50,15 +51,16 @@ function Highlights.addAllHighlights()
   end
 end
 
-function Highlights.removeHighlight(buf, markerId, row, colStart, colEnd)
-  local extMark = vim.api.nvim_buf_get_extmark_by_id(buf, Marker.ns, markerId, {})
+function Highlights.removeHighlight(buf, markerId)
+  local extMark = vim.api.nvim_buf_get_extmark_by_id(buf, Marker.ns, markerId, { details = true })
 
-  if #extMark > 0 and extMark[2] > 0 then
+  if #extMark > 0 and extMark[1] > 0 and extMark[2] > 0 then
     -- Create Highlight
-    vim.api.nvim_buf_set_extmark(buf, Marker.ns, row, colStart, {
-      end_col = colEnd,
+    vim.api.nvim_buf_set_extmark(buf, Marker.ns, extMark[1], extMark[2], {
+      end_col = extMark[3].end_col,
       id = markerId,
       hl_group = nil,
+      end_row = extMark[3].end_row,
     })
   end
 end
