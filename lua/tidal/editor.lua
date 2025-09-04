@@ -58,7 +58,7 @@ end
 function M.eval()
 	local text = get_text()
 	local expr = format.format_expression(text)
-	patterns.parse(text)
+	-- patterns.parse(text)
 	ghci.send(expr)
 end
 
