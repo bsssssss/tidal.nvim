@@ -3,17 +3,17 @@ local M = {}
 local default = {
 	tidal_boot = nil,
 	postwin = {
-		oscdump = true,
+		oscdump = false,
 		interpreter = true,
 		win = {
 			split = "right",
 			width = math.floor(vim.o.columns / 2),
 		},
 	},
-    osc = {
-        address = "127.0.0.1",
-        port = 6013,
-    }
+	osc = {
+		address = "127.0.0.1",
+		port = 6013,
+	},
 }
 
 setmetatable(M, {
