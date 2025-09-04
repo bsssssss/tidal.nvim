@@ -23,7 +23,7 @@ function M.start_server()
 		end
 	end)
 	server:open()
-	vim.notify("Listening for external messages on port " .. config.osc.port)
+	vim.notify("Listening for external messages on port " .. config.osc.port, vim.log.levels.INFO)
 end
 
 function M.stop_server()
