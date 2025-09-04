@@ -14,6 +14,8 @@ tidal.nvim is (another) Neovim plugin for livecoding with [TidalCycles](https://
 
 - Apply Haskell syntax highlighting to `.tidal` files
 
+- Event highlighting for the mini notation patterns
+
 ## Installation
 
 Install the plugin with your preferred package manager:
