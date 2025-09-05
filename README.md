@@ -24,7 +24,7 @@ eg [lazy.nvim](https://github.com/folke/lazy.nvim)
 
 ```lua
 return {
- "grddavies/tidal.nvim",
+ "thgrund/tidal.nvim",
  opts = {
   -- Your configuration here
   -- See configuration section for defaults
