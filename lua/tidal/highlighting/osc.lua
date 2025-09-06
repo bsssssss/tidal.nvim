@@ -1,6 +1,6 @@
 local OSC = {}
 
-local losc = require("losc")
+local losc = require("losc.src.losc")
 local pluginLibUv = require("losc.src.losc.plugins.udp-libuv")
 
 local highlight = require("tidal.highlighting.highlights")
