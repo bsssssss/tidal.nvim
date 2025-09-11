@@ -16,6 +16,9 @@ tidal.nvim is (another) Neovim plugin for livecoding with [TidalCycles](https://
 
 - Event highlighting for the mini notation patterns
 
+- Receive Tidal and SuperCollider responses from stdout and stderr in a separate
+  buffer that can be closed and open again
+
 ## Installation
 
 Install the plugin with your preferred package manager:
@@ -118,6 +121,7 @@ return {
 - `:TidalStartEventHighlighting`: sets up an osc client for receiving TidalCycles hihglight events and style messages
 - `:TidalStopEventHighlighting`: stops the osc clients
 - `:TidalNotification`: This opens a new buffer, that will display the stdout and stderr of the TidalCycles repl session
+- `:SuperColliderNotification`: This opens a new buffer, that will display the stdout and stderr of the SuperCollider repl session
 
 By default, only a session of `ghci` running the `BootTidal.hs` script provided by this plugin is run.
 
@@ -216,6 +220,7 @@ And for example in SuperCollider, you can change the color of a specific stream 
 ```SuperCollider
   var neoVimOSC = NetAddr("127.0.0.1", 3335);
   neoVimOSC.sendMsg("/neovim/eventhighlighting/addstyle",  "1" , "#e7b9ed");
+
 ```
 
 ### API

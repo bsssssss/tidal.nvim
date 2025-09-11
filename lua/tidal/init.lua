@@ -29,7 +29,12 @@ local function setup_user_commands()
   end, { desc = "Launch Tidal instance" })
   vim.api.nvim_create_user_command("TidalNotification", function()
     if state.ghci then
-      state.ghci:showNotificationBuffer()
+      state.ghci:showNotificationBuffer("haskell")
+    end
+  end, { desc = "Launch Tidal Notification Buffer" })
+  vim.api.nvim_create_user_command("SuperColliderNotification", function()
+    if state.sclang then
+      state.sclang:showNotificationBuffer("supercollider")
     end
   end, { desc = "Launch Tidal Notification Buffer" })
   vim.api.nvim_create_user_command("TidalQuit", api.exit_tidal, { desc = "Quit Tidal instance" })

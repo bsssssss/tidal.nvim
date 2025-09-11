@@ -21,7 +21,7 @@ function M.tidal.send_line(text, start)
     return
   end
 
-  state.ghci:send_line(text, { start[1] + 1, start[2] })
+  state.ghci:send_line(text, start)
 end
 
 --- Send multiline text to the tidal interpreter

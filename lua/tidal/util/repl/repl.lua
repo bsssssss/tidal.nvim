@@ -23,14 +23,15 @@ function Repl:new(opts)
   local obj = {}
   setmetatable(obj, self)
   obj.opts = opts
+  obj.stdout = {}
+  obj.stderr = {}
+  obj.stdin = {}
+  obj.proc = nil
 
   return obj
 end
 
 local uv, api, _ = vim.loop, vim.api, vim.fn
-local _, proc, stdin = {}, nil, nil
-local stdout = {}
-local stderr = {}
 
 local marker = require("tidal.highlighting.marker")
 local tokenizer = require("tidal.highlighting.tokenizer")
@@ -74,40 +75,43 @@ end
 --- @generic T
 --- @return T for method chaining
 function Repl:start(opts)
-  if proc and proc:is_active() then
-    return vim.notify("[tidal-fast] already running", vim.log.levels.INFO)
+  if self.proc and self.proc:is_active() then
+    return vim.notify("[repl] Command " .. self.opts.cmd .. "already running", vim.log.levels.INFO)
   end
 
   self.opts = vim.tbl_deep_extend("force", {}, self.opts, opts or {})
 
-  stdin = uv.new_pipe(false)
-  stdout, stderr = uv.new_pipe(false), uv.new_pipe(false)
+  self.stdin = uv.new_pipe(false)
+  self.stdout, self.stderr = uv.new_pipe(false), uv.new_pipe(false)
 
-  proc = uv.spawn(self.opts.cmd, { args = self.opts.args, stdio = { stdin, stdout, stderr } }, function(code, signal)
-    for _, p in ipairs({ stdin, stdout, stderr }) do
-      if p and not p:is_closing() then
-        p:close()
+  self.proc = uv.spawn(
+    self.opts.cmd,
+    { args = self.opts.args, stdio = { self.stdin, self.stdout, self.stderr } },
+    function(code, signal)
+      for _, p in ipairs({ self.stdin, self.stdout, self.stderr }) do
+        if p and not p:is_closing() then
+          p:close()
+        end
       end
+      self.proc = nil
+      vim.schedule(function()
+        vim.notify(("[tidal] ghci exited (code=%d, signal=%d)"):format(code, signal), vim.log.levels.WARN)
+      end)
     end
-    proc = nil
-    vim.schedule(function()
-      vim.notify(("[tidal-fast] ghci exited (code=%d, signal=%d)"):format(code, signal), vim.log.levels.WARN)
-    end)
-  end)
+  )
 
-  if not proc then
-    return vim.notify("[tidal-fast] failed to spawn ghci", vim.log.levels.ERROR)
+  if not self.proc then
+    return vim.notify("[tidal] failed to spawn " .. self.opts.cmd, vim.log.levels.ERROR)
   end
 
   local buf = api.nvim_create_buf(false, true)
-  api.nvim_buf_set_name(buf, "tidal-fast://ghci")
-
-  vim.notify("[tidal-fast] ghci started (pipe mode): " .. self.opts.cmd, vim.log.levels.INFO)
+  api.nvim_buf_set_name(buf, "tidal-fast://" .. self.opts.cmd)
+  vim.notify("[tidal] " .. self.opts.cmd .. " started (pipe mode)", vim.log.levels.INFO)
 
   return self
 end
 
-function Repl:showNotificationBuffer()
+function Repl:showNotificationBuffer(filetype)
   if self.buf == nil then
     self.buf = Buffer.new({
       name = self.opts.name,
@@ -118,37 +122,38 @@ function Repl:showNotificationBuffer()
 
   self.buf:show(self.opts or {})
 
-  self.buf:set_option("filetype", "haskell")
+  self.buf:set_option("filetype", filetype)
 
-  attach(stdout, "stdout", self.buf)
-  attach(stderr, "stderr", self.buf)
+  attach(self.stdout, "stdout", self.buf)
+  attach(self.stderr, "stderr", self.buf)
 end
 
 --- Send text to REPL
 --- @generic T
 --- @return T for method chaining
 function Repl:send(text, start)
-  local enrichedText = {}
+  if start then
+    local enrichedText = {}
+    local rowIndex = 0
+    local rowStart = start[1] + 1
 
-  local rowIndex = 0
-  local rowStart = start[1]
+    for line in text:gmatch("[^\r\n]+") do
+      local enrichedLine = tokenizer.addMetadata(line, rowStart + rowIndex)
+      table.insert(enrichedText, enrichedLine)
+      rowIndex = rowIndex + 1
 
-  for line in text:gmatch("[^\r\n]+") do
-    local enrichedLine = tokenizer.addMetadata(line, rowStart + rowIndex)
-    table.insert(enrichedText, enrichedLine)
-    rowIndex = rowIndex + 1
-
-    if line:match("^hush") ~= nil then
-      marker.deleteAllMarkers()
-      tokenizer.lastEventId = 0
+      if line:match("^hush") ~= nil then
+        marker.deleteAllMarkers()
+        tokenizer.lastEventId = 0
+      end
     end
+
+    text = table.concat(enrichedText, "\n") .. "\n"
   end
 
-  text = table.concat(enrichedText, "\n") .. "\n"
-
   -- vim.notify("[tidal-fast] Repl send received", vim.log.levels.INFO)
-  if stdin and not stdin:is_closing() then
-    stdin:write(text)
+  if self.stdin and not self.stdin:is_closing() then
+    self.stdin:write(text)
   end
 
   if self.proc == nil then
