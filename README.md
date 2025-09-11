@@ -56,6 +56,7 @@ return {
       file = "/Users/Your/Path/to/tidalcycles/BootTidal.hs",
       enabled = true,
       highlight = {
+        autostart = false,
         styles = {
           osc = {
             ip = "127.0.0.1",
@@ -161,8 +162,10 @@ and SuperCollider interpreters:
 ### Event Highlighting
 
 `tidal.nvim` provides the event highlighting for TidalCycles. This plugin was configured
-with TidalCycles version >= 1.10.0 in mind. To enable it, you simply need to execute
-`:TidalCyclesStartEventHighlighting` after TidalCycles was launched.
+with TidalCycles version >= 1.10.0 in mind. To enable it, you have two options:
+
+1. Execute `:TidalCyclesStartEventHighlighting` after TidalCycles was launched.
+2. Set the autostart property for the highlight in the config to true.
 
 You can customize the event highlighting markers in multiple ways:
 

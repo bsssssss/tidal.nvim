@@ -25,6 +25,7 @@ local defaults = {
       file = vim.api.nvim_get_runtime_file("bootfiles/BootTidal.hs", false)[1],
       enabled = true,
       highlight = {
+        autostart = false,
         styles = {
           osc = {
             ip = "127.0.0.1",
