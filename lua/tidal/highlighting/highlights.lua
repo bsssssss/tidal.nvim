@@ -1,23 +1,31 @@
 local Highlights = {}
 
+local config = require("tidal.config")
+
 local Marker = require("tidal.highlighting.marker")
 
-vim.api.nvim_set_hl(0, "CodeHighlight", { bg = "#7eaefc", foreground = "#000000" })
 local fn = vim.fn
 
 local function selectHlGroup(id)
-  local hlName = "CodeHighlight" .. id
+  local baseName = config.options.boot.tidal.highlight.styles.global.baseName
+  local hlName = baseName .. id
   local hlId = fn.hlID(hlName)
 
   if hlId > 0 then
     return hlName
   else
-    return "CodeHighlight"
+    return baseName
   end
 end
 
 function Highlights.addHl(id, color)
-  vim.api.nvim_set_hl(0, "CodeHighlight" .. id, { bg = color, foreground = "#000000" })
+  local baseName = config.options.boot.tidal.highlight.styles.global.baseName
+  vim.api.nvim_set_hl(0, baseName .. id, { bg = color, foreground = "#000000" })
+end
+
+function Highlights.addConfigHl(id, style)
+  local baseName = config.options.boot.tidal.highlight.styles.global.baseName
+  vim.api.nvim_set_hl(0, baseName .. id, style)
 end
 
 function Highlights.addHighlight(id, buf, markerId)

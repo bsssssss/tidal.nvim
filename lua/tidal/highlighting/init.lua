@@ -1,5 +1,6 @@
 local EventHighlights = {}
 
+local config = require("tidal.config")
 local highlights = require("tidal.highlighting.highlights")
 local osc = require("tidal.highlighting.osc")
 
@@ -47,9 +48,17 @@ local function clearInterval()
   EventHighlights.timer = nil
 end
 
-function EventHighlights.start(highlight, highlightStyle)
+function EventHighlights.start(highlight)
   local fpsToMs = 1000 / highlight.fps
-  osc.launch(highlight, highlightStyle)
+  osc.launch(highlight)
+
+  local baseName = config.options.boot.tidal.highlight.styles.global.baseName
+  local baseStyle = config.options.boot.tidal.highlight.styles.global.style
+  vim.api.nvim_set_hl(0, baseName, baseStyle)
+
+  for id, style in pairs(highlight.styles.custom) do
+    highlights.addConfigHl(id, style)
+  end
 
   setInterval(fpsToMs, handleMessages)
 end

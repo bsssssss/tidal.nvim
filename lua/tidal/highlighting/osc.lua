@@ -90,9 +90,12 @@ local function startStyleServer(host, port)
   osc:open()
 end
 
-function OSC.launch(senderOsc, styleOsc)
-  startServer(senderOsc.osc.ip, senderOsc.osc.port)
-  startStyleServer(styleOsc.osc.ip, styleOsc.osc.port)
+function OSC.launch(highlightConf)
+  local eventOsc = highlightConf.events.osc
+  local styleOsc = highlightConf.styles.osc
+
+  startServer(eventOsc.ip, eventOsc.port)
+  startStyleServer(styleOsc.ip, styleOsc.port)
 end
 
 return OSC

@@ -31,7 +31,7 @@ function M.launch_tidal(args)
 end
 
 function M.start_event_highlighting(args)
-  highlight.start(args.highlight, args.highlightStyle)
+  highlight.start(args.highlight)
 end
 
 function M.stop_event_highlighting()

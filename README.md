@@ -53,17 +53,25 @@ return {
       file = "/Users/Your/Path/to/tidalcycles/BootTidal.hs",
       enabled = true,
       highlight = {
-        osc = {
-          ip = "127.0.0.1",
-          port = 6013,
+        styles = {
+          osc = {
+            ip = "127.0.0.1",
+            port = 3335,
+          },
+          -- [Tidal ID] -> hl style 
+          custom = {
+            ["drums"] = { bg = "#e7b9ed", foreground = "#000000" },
+            ["2"] = { bg = "#b9edc7", foreground = "#000000" },
+          },
+          global = { baseName = "CodeHighlight", style = { bg = "#7eaefc", foreground = "#000000" } },
+        },
+        events = {
+          osc = {
+            ip = "127.0.0.1",
+            port = 6013,
+          },
         },
         fps = 30,
-      },
-      highlightStyle = {
-        osc = {
-          ip = "127.0.0.1",
-          port = 3335,
-        },
       },
     },
     sclang = {
@@ -103,9 +111,15 @@ return {
 
 ### Boot
 
-`tidal.nvim` provides a pair of `Ex` commands, `:TidalLaunch` and `:TidalQuit`,
-which start and stop TidalCycles processes. By default, only a session of
-`ghci` running the `BootTidal.hs` script provided by this plugin is run.
+`tidal.nvim` provides a of `Ex` commands:
+
+- `:TidalLaunch`: starts the TidalCycles process
+- `:TidalQuit`: stops the TidalCycles process
+- `:TidalStartEventHighlighting`: sets up an osc client for receiving TidalCycles hihglight events and style messages
+- `:TidalStopEventHighlighting`: stops the osc clients
+- `:TidalNotification`: This opens a new buffer, that will display the stdout and stderr of the TidalCycles repl session
+
+By default, only a session of `ghci` running the `BootTidal.hs` script provided by this plugin is run.
 
 If `boot.sclang.enabled` is `true`, then a session of `sclang` is run. Please
 ensure that the command `sclang` correctly starts an instance of SuperCollider
@@ -139,6 +153,70 @@ and SuperCollider interpreters:
   tidal, silencing the pattern. By default, with no count, d1 is silenced.
 
 - `hush` sends "hush" to the tidal interpreter, which silences all patterns.
+
+### Event Highlighting
+
+`tidal.nvim` provides the event highlighting for TidalCycles. This plugin was configured
+with TidalCycles version >= 1.10.0 in mind. To enable it, you simply need to execute
+`:TidalCyclesStartEventHighlighting` after TidalCycles was launched.
+
+You can customize the event highlighting markers in multiple ways:
+
+1. Change the global style
+2. Change the style for each stream id
+3. Change the color for each stream id with external osc messages
+
+Where you can edit the styles, you can change any property that is supported by [nvim_set_hl](https://neovim.io/doc/user/api.html#nvim_set_hl()).
+
+#### Change the global style
+
+In your config you can change the global style. The baseName will be applied to all features and has an impact on the osc remote side.
+
+```lua
+highlight = {
+  styles = {
+    global = { baseName = "CodeHighlight", style = { bg = "#7eaefc", foreground = "#000000" } },
+  },
+},
+```
+
+#### Change the style for each stream id
+
+In your config you can define custom styles for every TidalCycles stream. I.e. 1 = d1 and 2 = d2.
+But in case you use something like `p "drums" $ s "bd"`, then you can style this as well:
+
+```lua
+highlight = {
+  styles = {
+    custom = {
+      ["drums"] = { bg = "#e7b9ed", foreground = "#000000" },
+      ["2"] = { bg = "#b9edc7", foreground = "#000000" },
+    },
+  },
+},
+```
+
+#### Change the color for each stream id with external osc messages
+
+Right now it's only possible to change the color from the remote source. I choosed to do it this way, to avoid security vulnerabilites and to avoid extra dependencies. You can configure a remote source:
+
+```lua
+highlight = {
+  styles = {
+    osc = {
+      ip = "127.0.0.1",
+      port = 3335,
+    }
+  },
+},
+```
+
+And for example in SuperCollider, you can change the color of a specific stream id like this:
+
+```SuperCollider
+  var neoVimOSC = NetAddr("127.0.0.1", 3335);
+  neoVimOSC.sendMsg("/neovim/eventhighlighting/addstyle",  "1" , "#e7b9ed");
+```
 
 ### API
 
