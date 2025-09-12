@@ -81,6 +81,14 @@ local function setup_autocmds()
       end
     end,
   })
+
+  vim.api.nvim_create_autocmd("VimLeavePre", {
+    group = "Tidal",
+    pattern = { "*" },
+    callback = function ()
+      api.exit_tidal()
+    end
+  })
 end
 
 local MIN_VERSION = "0.8.0"

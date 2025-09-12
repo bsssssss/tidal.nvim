@@ -48,6 +48,10 @@ function M.exit_tidal()
     return
   end
 
+  if state.sclang then
+    state.sclang:send_line("0.exit;")
+  end
+
   for _, proc in ipairs({ state.ghci, state.sclang }) do
     if proc then
       proc:exit()
