@@ -34,7 +34,7 @@ local function setup_user_commands()
   end, { desc = "Launch Tidal Notification Buffer" })
   vim.api.nvim_create_user_command("SuperColliderNotification", function()
     if state.sclang then
-      state.sclang:showNotificationBuffer("supercollider")
+      state.sclang:showNotificationBuffer("sc_post")
     end
   end, { desc = "Launch Tidal Notification Buffer" })
   vim.api.nvim_create_user_command("TidalQuit", api.exit_tidal, { desc = "Quit Tidal instance" })
