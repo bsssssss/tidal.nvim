@@ -55,6 +55,9 @@ local function attach(pipe, label, buf)
       local complete, remainder = {}, ""
 
       if buf_acc:sub(-1) == "\n" then
+        if #lines > 0 and lines[#lines] == "" then
+          table.remove(lines)
+        end
         complete, buf_acc = lines, ""
       else
         remainder = table.remove(lines)
