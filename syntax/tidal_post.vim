@@ -11,7 +11,7 @@ let b:current_syntax = 'tidal_post'
 syn case match
 
 syn match superdirtwait /^Waiting for SuperDirt.*$/
-syn match superdirthandshake /^Connected to SuperDirt./
+syn match superdirthandshake /^Connected to SuperDirt\./
 
 syn match ghciError /error:/
 
