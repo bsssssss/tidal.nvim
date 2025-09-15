@@ -69,7 +69,7 @@ local function setup_autocmds()
     end,
   })
 
-  vim.api.nvim_create_autocmd({ "Filetype" }, {
+  vim.api.nvim_create_autocmd({ "FileType" }, {
     group = "Tidal",
     pattern = { "supercollider" },
     callback = function()
